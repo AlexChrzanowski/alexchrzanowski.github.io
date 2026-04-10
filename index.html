@@ -18,6 +18,11 @@
       --shadow: color-mix(in srgb, var(--text) 6%, transparent);
       --blob-a: color-mix(in srgb, #c9a87a 45%, var(--bg));
       --blob-b: color-mix(in srgb, #8fb0a8 35%, var(--bg));
+      --mesh-1: color-mix(in srgb, #d4a574 42%, transparent);
+      --mesh-2: color-mix(in srgb, #a89fc9 34%, transparent);
+      --mesh-3: color-mix(in srgb, #6a9e94 38%, transparent);
+      --ribbon-1: color-mix(in srgb, #c17f6a 28%, transparent);
+      --ribbon-2: color-mix(in srgb, #6b8fbf 22%, transparent);
       --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", sans-serif;
       --space: 1.25rem;
       --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -37,6 +42,11 @@
         --shadow: color-mix(in srgb, #000 28%, transparent);
         --blob-a: color-mix(in srgb, #8a7358 25%, var(--bg));
         --blob-b: color-mix(in srgb, #4a6862 22%, var(--bg));
+        --mesh-1: color-mix(in srgb, #b8956a 22%, transparent);
+        --mesh-2: color-mix(in srgb, #8a82b0 18%, transparent);
+        --mesh-3: color-mix(in srgb, #5a9088 20%, transparent);
+        --ribbon-1: color-mix(in srgb, #c49a8a 16%, transparent);
+        --ribbon-2: color-mix(in srgb, #7a9ec4 14%, transparent);
       }
     }
 
@@ -69,28 +79,168 @@
       background: var(--bg);
     }
 
-    .ambient__blob {
+    .ambient__mesh {
       position: absolute;
-      border-radius: 50%;
-      filter: blur(72px);
-      opacity: 0.55;
+      inset: -28%;
       will-change: transform;
     }
 
-    .ambient__blob--a {
-      width: min(58vw, 560px);
-      height: min(58vw, 560px);
-      top: -12%;
-      right: -8%;
-      background: radial-gradient(circle at 40% 40%, var(--blob-a), transparent 68%);
+    .ambient__mesh-inner {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 85% at 8% 28%, var(--mesh-1), transparent 55%),
+        radial-gradient(ellipse 75% 60% at 94% 12%, var(--mesh-2), transparent 58%),
+        radial-gradient(ellipse 60% 75% at 52% 98%, var(--mesh-3), transparent 52%),
+        conic-gradient(
+          from 200deg at 48% 45%,
+          color-mix(in srgb, var(--blob-b) 22%, transparent),
+          transparent 28%,
+          color-mix(in srgb, var(--blob-a) 18%, transparent),
+          transparent 55%,
+          color-mix(in srgb, var(--mesh-2) 12%, transparent),
+          transparent 78%
+        );
+      opacity: 0.92;
+      animation: ambientMeshDrift 36s ease-in-out infinite alternate;
     }
 
-    .ambient__blob--b {
-      width: min(50vw, 480px);
-      height: min(50vw, 480px);
-      bottom: 18%;
-      left: -12%;
-      background: radial-gradient(circle at 55% 55%, var(--blob-b), transparent 68%);
+    @keyframes ambientMeshDrift {
+      0% {
+        transform: rotate(-4deg) scale(1);
+      }
+      100% {
+        transform: rotate(5deg) scale(1.1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ambient__mesh-inner {
+        animation: none;
+      }
+    }
+
+    .ambient__ribbon {
+      position: absolute;
+      width: 160%;
+      height: min(45vh, 420px);
+      left: -30%;
+      will-change: transform;
+      pointer-events: none;
+    }
+
+    .ambient__ribbon--1 {
+      top: 8%;
+    }
+
+    .ambient__ribbon--2 {
+      bottom: -5%;
+    }
+
+    .ambient__ribbon-shape {
+      position: absolute;
+      inset: 0;
+      border-radius: 45%;
+      filter: blur(56px);
+      opacity: 0.42;
+    }
+
+    .ambient__ribbon--1 .ambient__ribbon-shape {
+      transform: rotate(-18deg);
+      background: linear-gradient(
+        105deg,
+        transparent 0%,
+        var(--ribbon-1) 38%,
+        color-mix(in srgb, var(--blob-a) 35%, transparent) 52%,
+        transparent 78%
+      );
+    }
+
+    .ambient__ribbon--2 .ambient__ribbon-shape {
+      transform: rotate(9deg);
+      background: linear-gradient(
+        275deg,
+        transparent 15%,
+        var(--ribbon-2) 45%,
+        color-mix(in srgb, var(--blob-b) 40%, transparent) 62%,
+        transparent 85%
+      );
+    }
+
+    .ambient__orb {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      will-change: transform;
+    }
+
+    .ambient__orb-inner {
+      position: absolute;
+      width: min(36vw, 340px);
+      height: min(36vw, 340px);
+      left: 0;
+      top: 0;
+      translate: -50% -50%;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle at 35% 35%,
+        color-mix(in srgb, #f0e6d4 55%, transparent),
+        color-mix(in srgb, var(--accent-muted) 25%, transparent) 42%,
+        transparent 68%
+      );
+      filter: blur(48px);
+      opacity: 0.45;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .ambient__orb-inner {
+        background: radial-gradient(
+          circle at 35% 35%,
+          color-mix(in srgb, #5a5348 40%, transparent),
+          color-mix(in srgb, var(--accent) 22%, transparent) 48%,
+          transparent 68%
+        );
+        opacity: 0.35;
+      }
+    }
+
+    .ambient__arc {
+      position: absolute;
+      width: 140%;
+      height: 55%;
+      left: -20%;
+      bottom: -8%;
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+      background: linear-gradient(
+        180deg,
+        transparent,
+        color-mix(in srgb, var(--accent) 12%, transparent) 35%,
+        color-mix(in srgb, var(--blob-b) 25%, transparent) 70%,
+        transparent
+      );
+      filter: blur(36px);
+      opacity: 0.5;
+      will-change: transform;
+    }
+
+    .ambient__grid {
+      position: absolute;
+      inset: 0;
+      opacity: 0.22;
+      background-image:
+        linear-gradient(color-mix(in srgb, var(--text) 5%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--text) 5%, transparent) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 75% 65% at 50% 38%, #000 12%, transparent 72%);
+      will-change: transform;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .ambient__grid {
+        opacity: 0.18;
+      }
     }
 
     .ambient__grain {
@@ -103,7 +253,11 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .ambient__blob {
+      .ambient__mesh,
+      .ambient__ribbon,
+      .ambient__orb,
+      .ambient__arc,
+      .ambient__grid {
         will-change: auto;
       }
     }
@@ -238,7 +392,22 @@
     }
 
     .hero {
+      position: relative;
+      z-index: 1;
       margin-bottom: 2rem;
+    }
+
+    .scroll-overtake {
+      position: relative;
+      z-index: 2;
+      background: var(--bg);
+      will-change: transform;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-overtake {
+        will-change: auto;
+      }
     }
 
     .hero-inner {
@@ -270,6 +439,13 @@
     .hero-photo {
       margin: 0;
       justify-self: center;
+      will-change: transform;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-photo {
+        will-change: auto;
+      }
     }
 
     @media (min-width: 640px) {
@@ -521,8 +697,20 @@
 </head>
 <body>
   <div class="ambient" aria-hidden="true">
-    <div class="ambient__blob ambient__blob--a" data-parallax="0.12"></div>
-    <div class="ambient__blob ambient__blob--b" data-parallax="0.2"></div>
+    <div class="ambient__mesh" data-parallax="0.04">
+      <div class="ambient__mesh-inner"></div>
+    </div>
+    <div class="ambient__ribbon ambient__ribbon--1" data-parallax="0.065">
+      <div class="ambient__ribbon-shape"></div>
+    </div>
+    <div class="ambient__ribbon ambient__ribbon--2" data-parallax="0.11">
+      <div class="ambient__ribbon-shape"></div>
+    </div>
+    <div class="ambient__orb" data-parallax="0.14">
+      <div class="ambient__orb-inner"></div>
+    </div>
+    <div class="ambient__arc" data-parallax="0.08"></div>
+    <div class="ambient__grid" data-parallax="0.032"></div>
     <div class="ambient__grain"></div>
   </div>
 
@@ -578,6 +766,7 @@
       </div>
     </header>
 
+    <div class="scroll-overtake">
     <main id="main" tabindex="-1">
       <h2 class="visually-hidden">Projects</h2>
 
@@ -662,6 +851,7 @@
     <footer>
       <p>© <span id="year"></span> Alex Chrzanowski. Replace footer text as you like.</p>
     </footer>
+    </div>
   </div>
 
   <script>
@@ -725,27 +915,57 @@
     })();
 
     (function () {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      var blobs = document.querySelectorAll('.ambient__blob[data-parallax]');
-      if (!blobs.length) return;
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var ambient = document.querySelector('.ambient');
+      var parallaxEls = ambient ? ambient.querySelectorAll('[data-parallax]') : [];
+      var overtakeEl = document.querySelector('.scroll-overtake');
+      var heroEl = document.getElementById('intro');
+      var heroPhoto = heroEl ? heroEl.querySelector('.hero-photo') : null;
+
       var ticking = false;
-      function applyParallax() {
+      var OVERTAKE_RATIO = 1;
+      var PHOTO_LAG = 0.22;
+
+      function applyScrollDrivenMotion() {
         var y = window.scrollY || document.documentElement.scrollTop || 0;
-        for (var i = 0; i < blobs.length; i++) {
-          var el = blobs[i];
-          var factor = parseFloat(el.getAttribute('data-parallax')) || 0.15;
-          el.style.transform = 'translate3d(0,' + Math.round(y * factor) + 'px,0)';
+
+        if (!reduce && parallaxEls.length) {
+          for (var i = 0; i < parallaxEls.length; i++) {
+            var el = parallaxEls[i];
+            var factor = parseFloat(el.getAttribute('data-parallax')) || 0.1;
+            el.style.transform = 'translate3d(0,' + Math.round(y * factor) + 'px,0)';
+          }
         }
+
+        if (!reduce && overtakeEl && heroEl) {
+          var cap = Math.min(Math.round(heroEl.offsetHeight * 0.92), 440);
+          var extra = Math.min(y * OVERTAKE_RATIO, cap);
+          overtakeEl.style.transform = 'translate3d(0,' + Math.round(-extra) + 'px,0)';
+          if (heroPhoto) {
+            var lagCap = Math.round(cap * 0.5);
+            var lag = Math.min(Math.round(y * PHOTO_LAG), lagCap);
+            heroPhoto.style.transform = 'translate3d(0,' + lag + 'px,0)';
+          }
+        } else {
+          if (overtakeEl) overtakeEl.style.transform = '';
+          if (heroPhoto) heroPhoto.style.transform = '';
+        }
+
         ticking = false;
       }
-      function onScroll() {
+
+      function onScrollOrResize() {
         if (!ticking) {
-          window.requestAnimationFrame(applyParallax);
+          window.requestAnimationFrame(applyScrollDrivenMotion);
           ticking = true;
         }
       }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      applyParallax();
+
+      if (!reduce && (parallaxEls.length || overtakeEl)) {
+        window.addEventListener('scroll', onScrollOrResize, { passive: true });
+        window.addEventListener('resize', onScrollOrResize, { passive: true });
+        applyScrollDrivenMotion();
+      }
     })();
   </script>
 </body>
