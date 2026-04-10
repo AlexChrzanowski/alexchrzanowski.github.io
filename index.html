@@ -269,13 +269,12 @@
       }
     }
 
+    /* Opacity is controlled by scroll JS; only transform here so keyframes do not override inline opacity. */
     @keyframes heroReveal {
       from {
-        opacity: 0;
         transform: translateY(18px);
       }
       to {
-        opacity: 1;
         transform: translateY(0);
       }
     }
@@ -305,7 +304,6 @@
     @media (prefers-reduced-motion: reduce) {
       @keyframes heroReveal {
         from, to {
-          opacity: 1;
           transform: none;
         }
       }
@@ -955,10 +953,10 @@
           }
           var heroInner = heroEl.querySelector('.hero-inner');
           if (heroInner) {
-            var heroH = Math.max(heroEl.offsetHeight, 1);
-            var cover = Math.min(1, (extra / heroH) * 1.2);
+            var fadeDen = Math.max(cap, 1);
+            var cover = Math.min(1, (extra / fadeDen) * 1.06);
             var vis = Math.max(0, 1 - cover);
-            heroInner.style.opacity = String(Math.round(vis * 1000) / 1000);
+            heroInner.style.setProperty('opacity', String(Math.round(vis * 1000) / 1000));
             if (vis < 0.04) {
               heroEl.setAttribute('inert', '');
             } else {
@@ -971,7 +969,7 @@
           if (heroEl) {
             heroEl.removeAttribute('inert');
             var hi = heroEl.querySelector('.hero-inner');
-            if (hi) hi.style.opacity = '';
+            if (hi) hi.style.removeProperty('opacity');
           }
         }
 
