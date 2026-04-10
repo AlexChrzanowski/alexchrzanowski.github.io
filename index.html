@@ -954,7 +954,7 @@
           var heroInner = heroEl.querySelector('.hero-inner');
           if (heroInner) {
             var fadeDen = Math.max(cap, 1);
-            var cover = Math.min(1, (extra / fadeDen) * 1.06);
+            var cover = Math.min(1, (extra / fadeDen) * 2.12);
             var vis = Math.max(0, 1 - cover);
             heroInner.style.setProperty('opacity', String(Math.round(vis * 1000) / 1000));
             if (vis < 0.04) {
