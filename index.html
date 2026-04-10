@@ -662,8 +662,29 @@
       font-weight: 600;
     }
 
-    .panel-inner h3:first-child {
-      margin-top: 0;
+    .panel-page-title {
+      margin: 0 0 1.1rem;
+      font-size: clamp(1.35rem, 3vw, 1.85rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      color: var(--text);
+    }
+
+    .panel-inner--home {
+      padding-top: 0.35rem;
+    }
+
+    .panel-home-hint {
+      margin: 0;
+      max-width: 52ch;
+      font-size: 0.98rem;
+      color: var(--muted);
+    }
+
+    body[data-view="project"] main {
+      border-top: none;
+      padding-top: 0.75rem;
     }
 
     .panel-inner p {
@@ -700,7 +721,7 @@
     }
   </style>
 </head>
-<body>
+<body data-view="home">
   <div class="ambient" aria-hidden="true">
     <div class="ambient__mesh" data-parallax="0.04">
       <div class="ambient__mesh-inner"></div>
@@ -719,13 +740,16 @@
     <div class="ambient__grain"></div>
   </div>
 
-  <a class="skip-link" href="#intro">Skip to content</a>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-tabs">
     <div class="site-tabs-inner">
-      <nav aria-label="Project categories">
-        <div role="tablist" aria-label="Project categories">
-          <button type="button" role="tab" id="tab-tikz" aria-selected="true" aria-controls="panel-tikz" tabindex="0">
+      <nav aria-label="Site sections">
+        <div role="tablist" aria-label="Site sections">
+          <button type="button" role="tab" id="tab-home" aria-selected="true" aria-controls="panel-home" tabindex="0">
+            Home
+          </button>
+          <button type="button" role="tab" id="tab-tikz" aria-selected="false" aria-controls="panel-tikz" tabindex="-1">
             Python to TikZ
           </button>
           <button type="button" role="tab" id="tab-physics" aria-selected="false" aria-controls="panel-physics" tabindex="-1">
@@ -773,10 +797,17 @@
 
     <div class="scroll-overtake">
     <main id="main" tabindex="-1">
-      <h2 class="visually-hidden">Projects</h2>
+      <h2 class="visually-hidden">Content</h2>
 
-      <section id="panel-tikz" role="tabpanel" aria-labelledby="tab-tikz" tabindex="0">
+      <section id="panel-home" role="tabpanel" aria-labelledby="tab-home" tabindex="0">
+        <div class="panel-inner panel-inner--home">
+          <p class="panel-home-hint">Choose a section above for detailed project write-ups.</p>
+        </div>
+      </section>
+
+      <section id="panel-tikz" role="tabpanel" aria-labelledby="tab-tikz" hidden tabindex="0">
         <div class="panel-inner">
+          <h1 class="panel-page-title">Python to TikZ</h1>
           <h3>Overview</h3>
           <p>
             Describe your Python-to-TikZ work: pipelines, libraries, or workflows that generate or
@@ -798,6 +829,7 @@
 
       <section id="panel-physics" role="tabpanel" aria-labelledby="tab-physics" hidden tabindex="0">
         <div class="panel-inner">
+          <h1 class="panel-page-title">Software / physics research</h1>
           <h3>Overview</h3>
           <p>
             Summarize software engineering work in a physics research context: instruments, simulation,
@@ -818,6 +850,7 @@
 
       <section id="panel-shell" role="tabpanel" aria-labelledby="tab-shell" hidden tabindex="0">
         <div class="panel-inner">
+          <h1 class="panel-page-title">UNIX shell project</h1>
           <h3>Overview</h3>
           <p>
             Describe your UNIX shell project: a custom shell, scripting toolkit, dotfiles philosophy,
@@ -838,6 +871,7 @@
 
       <section id="panel-small" role="tabpanel" aria-labelledby="tab-small" hidden tabindex="0">
         <div class="panel-inner">
+          <h1 class="panel-page-title">Smaller projects</h1>
           <h3>Overview</h3>
           <p>
             Use this tab for experiments, utilities, course work, or one-off tools that deserve a line
@@ -869,6 +903,34 @@
         return document.getElementById(tab.getAttribute('aria-controls'));
       });
 
+      function resetScrollDrivenStyles() {
+        var overtakeEl = document.querySelector('.scroll-overtake');
+        var heroEl = document.getElementById('intro');
+        var heroPhoto = heroEl ? heroEl.querySelector('.hero-photo') : null;
+        if (overtakeEl) overtakeEl.style.transform = '';
+        if (heroPhoto) heroPhoto.style.transform = '';
+        if (heroEl) {
+          heroEl.removeAttribute('inert');
+          var hi = heroEl.querySelector('.hero-inner');
+          if (hi) hi.style.removeProperty('opacity');
+        }
+      }
+
+      function applyViewForTab(index) {
+        var isHome = index === 0;
+        document.body.dataset.view = isHome ? 'home' : 'project';
+        var hero = document.getElementById('intro');
+        if (hero) {
+          if (isHome) {
+            hero.removeAttribute('hidden');
+          } else {
+            hero.setAttribute('hidden', '');
+          }
+        }
+        resetScrollDrivenStyles();
+        window.scrollTo(0, 0);
+      }
+
       function selectTab(index) {
         tabs.forEach(function (tab, i) {
           var selected = i === index;
@@ -883,6 +945,7 @@
             }
           }
         });
+        applyViewForTab(index);
       }
 
       tabs.forEach(function (tab, i) {
@@ -940,6 +1003,19 @@
             var factor = parseFloat(el.getAttribute('data-parallax')) || 0.1;
             el.style.transform = 'translate3d(0,' + Math.round(y * factor) + 'px,0)';
           }
+        }
+
+        var projectView = document.body.getAttribute('data-view') === 'project';
+        if (projectView) {
+          if (overtakeEl) overtakeEl.style.transform = '';
+          if (heroPhoto) heroPhoto.style.transform = '';
+          if (heroEl) {
+            heroEl.removeAttribute('inert');
+            var hi0 = heroEl.querySelector('.hero-inner');
+            if (hi0) hi0.style.removeProperty('opacity');
+          }
+          ticking = false;
+          return;
         }
 
         if (!reduce && overtakeEl && heroEl) {
