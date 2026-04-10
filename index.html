@@ -401,6 +401,7 @@
     .scroll-overtake {
       position: relative;
       z-index: 2;
+      /* Transparent: hero .hero-inner fades out as this block slides up so layout stays but photo/copy vanish. */
       background: transparent;
       will-change: transform;
     }
@@ -421,11 +422,14 @@
       border-radius: 0;
       box-shadow: none;
       animation: heroReveal 0.75s var(--ease-out) both;
+      /* Opacity driven by scroll script when projects block covers hero; box still reserves space. */
+      will-change: opacity;
     }
 
     @media (prefers-reduced-motion: reduce) {
       .hero-inner {
         animation: none;
+        will-change: auto;
       }
     }
 
@@ -949,9 +953,26 @@
             var lag = Math.min(Math.round(y * PHOTO_LAG), lagCap);
             heroPhoto.style.transform = 'translate3d(0,' + lag + 'px,0)';
           }
+          var heroInner = heroEl.querySelector('.hero-inner');
+          if (heroInner) {
+            var heroH = Math.max(heroEl.offsetHeight, 1);
+            var cover = Math.min(1, (extra / heroH) * 1.2);
+            var vis = Math.max(0, 1 - cover);
+            heroInner.style.opacity = String(Math.round(vis * 1000) / 1000);
+            if (vis < 0.04) {
+              heroEl.setAttribute('inert', '');
+            } else {
+              heroEl.removeAttribute('inert');
+            }
+          }
         } else {
           if (overtakeEl) overtakeEl.style.transform = '';
           if (heroPhoto) heroPhoto.style.transform = '';
+          if (heroEl) {
+            heroEl.removeAttribute('inert');
+            var hi = heroEl.querySelector('.hero-inner');
+            if (hi) hi.style.opacity = '';
+          }
         }
 
         ticking = false;
